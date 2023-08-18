@@ -1,0 +1,58 @@
+//Referencia para poder usar el autocompletado de campos de Visual Studio Code Intellisense
+/// <reference types="Cypress" /> 
+
+//Pluguin cypress-xpath para poder usar localizador por xpath (cy.xpath)
+require('cypress-xpath')
+
+describe("Ejercicio 2", () =>{
+    
+    //Se genera variable tiempo de 1000 milisegundos (1 segundo) para utilizarla de espera en caso de ser necesario
+    let time=1000
+
+    it("Automatización de una web", () =>{
+        
+        //1. Buscar en Google la palabra “automatización”
+        cy.log('-----> Abriendo el navegador e ingresa a Google');
+        cy.visit("https://google.com") 
+
+        //Click en el boton "Aceptar todo" para las cookies del dominio
+        cy.log('-----> Clickeando en el boton "Aceptar todo" para las cookies del dominio');
+        cy.get("#L2AGLb > .QS5gu").should('be.visible').click()
+
+        //Tipea la palabra "automatizacion" en el campo de texto buscador de Google
+        cy.log('-----> Tipeando la palabra "automatizacion" en el campo de texto buscador de Google');
+        cy.xpath("//*[@id='APjFqb']").should('be.visible').type("automatizacion")
+
+        //Espera 1 segundo a que aparezcan las sugerencias para luego presionar la tecla ENTER
+        cy.log('-----> Esperando...');
+        cy.wait(time)
+
+        //Presiona la tecla ENTER
+        cy.log('-----> Presionando la tecla ENTER');
+        cy.xpath("//*[@id='APjFqb']").should('be.visible').type('{enter}')
+
+
+
+        //2. Buscar el link de la Wikipedia resultante
+        cy.log('-----> Buscando el link de la wikipedia resultante');
+        // Clic sobre el link de automatizacion de wikipedia sin distinguir mayusculas ni minusculas
+        cy.get(".LC20lb.MBeuO.DKV0Md").should('be.visible').contains('Wikipedia',{matchCase:false}).and('contain','Automatización').click()
+
+
+
+        //3. Comprobar en qué año se hizo el primer proceso automático
+        cy.log('-----> Comprobando en que año se hizo el primer proceso automático...')
+        //Guarda el texto en una variable para usarla mas tarde
+        cy.xpath("//*[@id='mw-content-text']/div[1]/p[8]").should('be.visible').invoke('text').as('texto')
+        //Se usa la variable para devolver el texto guardado y mostrarlo por consola
+        cy.get('@texto').then((text) => {
+            cy.log(text)
+        })
+
+
+
+        //4. Realizar un screenshot de la página de la Wikipedia
+        cy.log('-----> Realizando un screenshot de la página de la Wikipedia');
+        cy.screenshot("Screenshot_Wikipedia_web_"+Date())
+    })
+})
